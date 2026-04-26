@@ -36,6 +36,11 @@ For extracting content from a specific webpage:
 2. Follows the URL and extracts the main page content
 3. Removes navigation, ads, and other non-content elements
 
+The server additionally provides these non-web specialised tools:
+
+### 1. `get-current-time` (Utility Tool)
+Returns the host computer's local time/date and IANA timezone
+
 ## Compatibility
 
 This MCP server has been developed and tested with **LM Studio** and **LibreChat**. It has not been tested with other MCP clients.
