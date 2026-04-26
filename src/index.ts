@@ -322,6 +322,91 @@ class WebSearchMCPServer {
         }
       }
     );
+
+    // Register current time tool
+    this.server.tool(
+      'get-current-time',
+      'Return the current date and time for a requested IANA timezone. Use this for current date/time requests instead of web search.',
+      {
+        timezone: z
+          .string()
+          .default('Australia/Sydney')
+          .describe('IANA timezone, e.g. Australia/Sydney, UTC, America/New_York'),
+      },
+      async (args: unknown) => {
+        console.log(`[MCP] Tool call received: get-current-time`);
+        console.log(`[MCP] Raw arguments:`, JSON.stringify(args, null, 2));
+    
+        if (typeof args !== 'object' || args === null) {
+          throw new Error('Invalid arguments: args must be an object');
+        }
+    
+        const obj = args as Record<string, unknown>;
+    
+        const timezone =
+          typeof obj.timezone === 'string' && obj.timezone.trim()
+            ? obj.timezone.trim()
+            : 'Australia/Sydney';
+    
+        const now = new Date();
+    
+        // Validate timezone early
+        try {
+          new Intl.DateTimeFormat('en-AU', { timeZone: timezone }).format(now);
+        } catch {
+          throw new Error(`Invalid timezone: ${timezone}`);
+        }
+    
+        const parts = new Intl.DateTimeFormat('en-AU', {
+          timeZone: timezone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          weekday: 'long',
+          hour12: false,
+          timeZoneName: 'short',
+        }).formatToParts(now);
+    
+        const getPart = (type: string): string =>
+          parts.find((part) => part.type === type)?.value ?? '';
+    
+        const year = getPart('year');
+        const month = getPart('month');
+        const day = getPart('day');
+        const hour = getPart('hour');
+        const minute = getPart('minute');
+        const second = getPart('second');
+        const weekday = getPart('weekday');
+        const abbreviation = getPart('timeZoneName');
+    
+        const date = `${year}-${month}-${day}`;
+        const time = `${hour}:${minute}:${second}`;
+    
+        const result = {
+          ok: true,
+          timezone,
+          datetime_local: `${date}T${time}`,
+          date,
+          time,
+          weekday,
+          abbreviation,
+          source: 'local_system_clock',
+          retrieved_at_utc: now.toISOString(),
+        };
+    
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+    );
   }
 
   private validateAndConvertArgs(args: unknown): WebSearchToolInput {
