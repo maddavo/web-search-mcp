@@ -269,6 +269,7 @@ Use this tool for current date/time requests instead of web search or scraping p
 {
   "timezone": "Australia/Sydney"
 }
+```
 
 ## Standalone Usage
 
