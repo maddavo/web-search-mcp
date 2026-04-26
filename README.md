@@ -250,6 +250,21 @@ A utility tool for extracting content from a specific webpage:
 }
 ```
 
+## Additional Tools
+
+### `get-current-time`
+
+Returns the current local date/time for a requested IANA timezone using the host machine's system clock.
+
+Use this tool for current date/time requests instead of web search or scraping public clock websites.
+
+#### Arguments
+
+```json
+{
+  "timezone": "Australia/Sydney"
+}
+
 ## Standalone Usage
 
 You can also run the server directly:
